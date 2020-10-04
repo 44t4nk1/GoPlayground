@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 //Article is
@@ -27,14 +29,27 @@ func allArticles(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(articles)
 }
 
+func allPostArticles(w http.ResponseWriter, r *http.Request) {
+	articles := Articles{
+		Article{Title: "Test Titlea", Desc: "Test Desca", Content: "Test contenta"},
+		Article{Title: "Test Titleb", Desc: "Test Descb", Content: "Test contentb"},
+	}
+
+	fmt.Println("Endpont hit: all post articles endpoint")
+	json.NewEncoder(w).Encode(articles)
+}
+
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Homepage endpoint Hit")
 }
 
 func handleRequest() {
-	http.HandleFunc("/", homePage)
-	http.HandleFunc("/articles", allArticles)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	myRouter := mux.NewRouter().StrictSlash(true)
+
+	myRouter.HandleFunc("/", homePage)
+	myRouter.HandleFunc("/articles", allArticles).Methods("GET")
+	myRouter.HandleFunc("/articles", allPostArticles).Methods("POST")
+	log.Fatal(http.ListenAndServe(":8081", myRouter))
 }
 
 func main() {
