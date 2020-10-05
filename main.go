@@ -4,7 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
+	"math/rand"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -52,6 +56,20 @@ func handleRequest() {
 	log.Fatal(http.ListenAndServe(":8081", myRouter))
 }
 
+func playground() {
+	fmt.Println("My favorite number is", rand.Intn(10))
+	fmt.Printf("Now you have %g problems.\n", math.Sqrt(7))
+	fmt.Println(math.Pi)
+}
+
+func concat(a string, b int) string {
+	number := strconv.Itoa(b)
+	final := a + number
+	return final
+}
+
 func main() {
-	handleRequest()
+	// handleRequest()
+	// playground()
+	fmt.Fprintln(os.Stdout, concat("lol ", 3))
 }
