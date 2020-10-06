@@ -30,5 +30,11 @@ func main() {
 		panic(err)
 	}
 
+	insert, err := db.Query("INSERT INTO newusers VALUES('MEHTA');")
+	if err != nil {
+		panic(err)
+	}
+	defer insert.Close()
+
 	fmt.Println("Successfully connected!")
 }
