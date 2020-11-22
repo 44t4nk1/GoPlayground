@@ -32,34 +32,42 @@ func (b *Book) SaveBook() *Book {
 //CreateBook ...
 func CreateBook(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		c.Error(err)
+	}
 	book := Book{}
 	book.BeforeCreate()
-	err = json.Unmarshal(body, &book)
-	if err != nil {
-		c.Error(err)
+	if c.Request.ContentLength != 0 {
+		err = json.Unmarshal(body, &book)
+		if err != nil {
+			c.Error(err)
+		}
+		userCreated := book.SaveBook()
+		if err != nil {
+			c.Error(err)
+		}
+		c.JSON(200, userCreated)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Pass a body"})
 	}
-	userCreated := book.SaveBook()
-	if err != nil {
-		c.Error(err)
-	}
-	c.JSON(200, userCreated)
 }
 
 //GetParams ...
 func GetParams(c *gin.Context) {
-	vars := c.Param("uuid")
 
+	vars := c.Param("uuid")
+	spars := c.Param("lol")
 	userid, err := uuid.Parse(vars)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not parse UUID"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"uuid": userid})
+	c.JSON(http.StatusOK, gin.H{"uuid": userid, "lol": spars})
 }
 
 func main() {
 	router := gin.Default()
 	router.POST("/", CreateBook)
-	router.GET("/getter/:uuid", GetParams)
+	router.GET("/getter/:uuid/:lol", GetParams)
 	router.Run(":8000")
 }
